@@ -1,0 +1,8 @@
+{% set sumo = salt['grains.filter_by']({
+    'RedHat': {
+        'packagename': 'sumo',
+        'packagesource_us': 'https://collectors.us2.sumologic.com/rest/download/linux/64',
+        'packagesource_eu': 'https://collectors.eu.sumologic.com/rest/download/rpm/64',
+        'service': '/opt/SumoCollector/collector',
+    },
+}, merge=salt['pillar.get']('sumo')  ) %}
