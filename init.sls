@@ -28,11 +28,22 @@ sumo.cleanup:
     - onlyif: test -f /opt/SumoCollector/collector
     - onlyif: /tmp/sumo_credentials.txt
 
-sumo.config:
+user.properties:
   file.managed:
-    - name: /etc/sumo.conf
+    - name: /opt/SumoCollector/config/user.properties
     - user: root
     - group: sumologic_collector
-    - source: salt://sumocollector/templates/sumo.conf.jinja
+    - mode: 644
+    - source: salt://sumocollector/templates/user.properties.jinja
     - template: jinja
+    - onlyif: test -f /opt/SumoCollector/config/user.properties
 
+sumo.sources:
+  file.managed:
+    - name: /opt/SumoCollector/config/sources.json
+    - user: root
+    - group: sumologic_collector
+    - mode: 644
+    - source: salt://sumocollector/templates/sources.json.jinja
+    - template: jinja
+    - onlyif: test -f /opt/SumoCollector/collector
