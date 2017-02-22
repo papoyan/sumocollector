@@ -1,0 +1,28 @@
+sumocollector:
+  accessid: *************
+  accesskey: ************************************************
+  collector_name: jenkins
+  sources_file_path: /opt/SumoCollector/config/sources.json
+  api_version: v1
+  sources:
+      - name: jenkins_logs
+        args:
+          sourceType: LocalFile
+          automaticDateParsing: true
+          multilineProcessingEnabled: false
+          useAutolineMatching: true
+          forceTimeZone: false
+          timeZone: UTC
+          category: jenkins_logs
+          pathExpression: /var/log/jenkins/jenkins.log
+
+      - name: apache_logs
+        args:
+          sourceType: LocalFile
+          automaticDateParsing: true
+          multilineProcessingEnabled: false
+          useAutolineMatching: true
+          forceTimeZone: false
+          timeZone: UTC
+          category: apache_logs
+          pathExpression: /var/log/httpd/access.log
