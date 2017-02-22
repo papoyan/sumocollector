@@ -19,31 +19,31 @@ sumo.generate_credentials_file:
 sumo.install_package:
   cmd.run:
     - name: /bin/sh /tmp/sumo.sh -q -varfile /tmp/sumo_credentials.txt
-    - unless: test -f /opt/SumoCollector/collector
+    - unless: test -d {{ sumo.install_dir }}
     - onlyif: test -f /tmp/sumo_credentials.txt
 
 sumo.cleanup:
   cmd.run:
     - name: rm -f /tmp/sumo_credentials.txt
-    - onlyif: test -f /opt/SumoCollector/collector
+    - onlyif: test -d {{ sumo.install_dir }}
     - onlyif: /tmp/sumo_credentials.txt
 
 user.properties:
   file.managed:
-    - name: /opt/SumoCollector/config/user.properties
+    - name: {{ sumo.install_dir }}/config/user.properties
     - user: root
     - group: sumologic_collector
     - mode: 644
     - source: salt://sumocollector/templates/user.properties.jinja
     - template: jinja
-    - onlyif: test -f /opt/SumoCollector/config/user.properties
+    - onlyif: test -f {{ sumo.install_dir }}/config/user.properties
 
 sumo.sources:
   file.managed:
-    - name: /opt/SumoCollector/config/sources.json
+    - name: {{ sumo.install_dir }}/config/sources.json
     - user: root
     - group: sumologic_collector
     - mode: 644
     - source: salt://sumocollector/templates/sources.json.jinja
     - template: jinja
-    - onlyif: test -f /opt/SumoCollector/collector
+    - onlyif: test -d {{ sumo.install_dir }}
