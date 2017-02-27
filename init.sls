@@ -1,3 +1,4 @@
+{%- set sources =  salt['pillar.get']('sumocollector:sources') %}
 {% from "sumocollector/map.jinja" import sumo with context %}
 
 sumo.download_package:
@@ -45,13 +46,14 @@ user.properties:
       - module: sumo.restart
 
 sumo.sources:
-  file.managed:
+  file.serialize:
     - name: {{ sumo.install_dir }}/config/sources.json
+    - dataset: {{ sources }}
     - user: root
     - group: sumologic_collector
     - mode: 644
-    - source: salt://sumocollector/templates/sources.json.jinja
-    - template: jinja
+    - formatter: json
     - onlyif: test -d {{ sumo.install_dir }}
     - watch_in:
       - module: sumo.restart
+
