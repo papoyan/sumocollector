@@ -28,6 +28,10 @@ sumo.cleanup:
     - onlyif: test -d {{ sumo.install_dir }}
     - onlyif: /tmp/sumo_credentials.txt
 
+sumo.restart:
+  cmd.run:
+    - name: {{ sumo.install_dir }}/collector restart
+
 user.properties:
   file.managed:
     - name: {{ sumo.install_dir }}/config/user.properties
@@ -37,6 +41,8 @@ user.properties:
     - source: salt://sumocollector/templates/user.properties.jinja
     - template: jinja
     - onlyif: test -f {{ sumo.install_dir }}/config/user.properties
+    - watch_in:
+      - module: sumo.restart
 
 sumo.sources:
   file.managed:
@@ -47,3 +53,5 @@ sumo.sources:
     - source: salt://sumocollector/templates/sources.json.jinja
     - template: jinja
     - onlyif: test -d {{ sumo.install_dir }}
+    - watch_in:
+      - module: sumo.restart
