@@ -1,5 +1,19 @@
 {%- set sources =  salt['pillar.get']('sumocollector:sources') %}
+{%- set accessid =  salt['pillar.get']('sumocollector:accessid') %}
+{%- set accesskey =  salt['pillar.get']('sumocollector:accesskey') %}
+{%- set collector_name =  salt['pillar.get']('sumocollector:collector_name') %}
+{%- set sources_file_path =  salt['pillar.get']('sumocollector:sources_file_path') %}
 {% from "sumocollector/map.jinja" import sumo with context %}
+
+sumo.sources:
+  file.serialize:
+    - name: {{ sources_file_path }}
+    - dataset: {{ sources }}
+    - user: root
+    - group: sumologic_collector
+    - mode: 644
+    - formatter: json
+    - encoding_type: utf8
 
 sumo.download_package:
   cmd.run:
@@ -7,53 +21,8 @@ sumo.download_package:
     - creates: /tmp/sumo.sh
     - unless: test -f /tmp/sumo.sh
  
-{% if salt['pillar.get']('sumocollector:accessid') %}
-sumo.generate_credentials_file:
-  file.managed:
-    - name: /tmp/sumo_credentials.txt
-    - user: root
-    - group: root
-    - source: salt://sumocollector/templates/sumo_credentials.jinja
-    - template: jinja
-{% endif %}
-
 sumo.install_package:
   cmd.run:
-    - name: /bin/sh /tmp/sumo.sh -q -varfile /tmp/sumo_credentials.txt
+    - name: /bin/sh /tmp/sumo.sh -q -Vsumo.accessid={{ accessid }} -Vsumo.accesskey={{ accesskey }} -VsyncSources={{ sources_file_path }} -Vcollector.name={{ collector_name }}
     - unless: test -d {{ sumo.install_dir }}
-    - onlyif: test -f /tmp/sumo_credentials.txt
-
-sumo.cleanup:
-  cmd.run:
-    - name: rm -f /tmp/sumo_credentials.txt
-    - onlyif: test -d {{ sumo.install_dir }}
-    - onlyif: /tmp/sumo_credentials.txt
-
-sumo.restart:
-  cmd.run:
-    - name: {{ sumo.install_dir }}/collector restart
-
-user.properties:
-  file.managed:
-    - name: {{ sumo.install_dir }}/config/user.properties
-    - user: root
-    - group: sumologic_collector
-    - mode: 644
-    - source: salt://sumocollector/templates/user.properties.jinja
-    - template: jinja
-    - onlyif: test -f {{ sumo.install_dir }}/config/user.properties
-    - watch_in:
-      - module: sumo.restart
-
-sumo.sources:
-  file.serialize:
-    - name: {{ sumo.install_dir }}/config/sources.json
-    - dataset: {{ sources }}
-    - user: root
-    - group: sumologic_collector
-    - mode: 644
-    - formatter: json
-    - onlyif: test -d {{ sumo.install_dir }}
-    - watch_in:
-      - module: sumo.restart
-
+    - onlyif: test -f {{ sources_file_path }}
