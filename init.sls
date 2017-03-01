@@ -13,7 +13,6 @@ sumo.sources:
     - group: sumologic_collector
     - mode: 644
     - formatter: json
-    - encoding_type: utf8
 
 sumo.download_package:
   cmd.run:
