@@ -4,6 +4,6 @@
         'packagesource_us': 'https://collectors.us2.sumologic.com/rest/download/linux/64',
         'packagesource_eu': 'https://collectors.eu.sumologic.com/rest/download/rpm/64',
         'install_dir': '/usr/local/SumoCollector',
-        'sources_file_path': '/etc/sources.json',
+        'sources_file_path': '/etc/sources',
     },
 }, merge=salt['pillar.get']('sumo')  ) %}
