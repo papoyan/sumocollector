@@ -2,6 +2,7 @@ sumocollector:
   accessid: *************
   accesskey: ************************************************
   collector_name: webserver
+  collector_region: eu
   sources_file_path: /etc/sources/
   
   sources:
